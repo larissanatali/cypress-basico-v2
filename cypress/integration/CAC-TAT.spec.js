@@ -1,6 +1,7 @@
 /// <reference types="Cypress" />
 
 describe('Central de Atendimento ao Cliente TAT', function () {
+    const three = 3000
     beforeEach(function () {
         cy.visit('./src/index.html');
     })
@@ -77,7 +78,7 @@ describe('Central de Atendimento ao Cliente TAT', function () {
         cy.get('.error').should('be.visible')
     });
     it('envia o formuário com sucesso usando um comando customizado', () => {
-        cy.fillMandatoryFieldsAndSubmit()
+        cy.sucesso()
     });
     it('envia o formuário com sucesso contains', () => {
         const longText = 'No objeto de `options` que podemos passar ao comando `.type()`, é possível sobrescrever o `delay` padrão por outro valor (em milissegundos).'
@@ -168,7 +169,7 @@ describe('Central de Atendimento ao Cliente TAT', function () {
                 expect($input[0].files[0].name).to.equal('example.json')
             })
     });
-    it('verifica que a política de privacidade abre em outra aba sem a necessidade de um clique', function() {
+    it('verifica que a política de privacidade abre em outra aba sem a necessidade de um clique', function () {
         cy.get('#privacy a').should('have.attr', 'target', '_blank')
     });
     it('acessa a página da política de privacidade removendo o target e então clicanco no link', () => {
@@ -178,14 +179,83 @@ describe('Central de Atendimento ao Cliente TAT', function () {
         cy.contains('Talking About Testing').should('be.visible')
     });
     it('testa a página da política de privavidade de forma independente', () => {
-    const text1 = 'Não salvamos dados submetidos no formulário da aplicação CAC TAT.'
-    const text2 = 'Utilzamos as tecnologias HTML, CSS e JavaScript, para simular uma aplicação real.'
-    const text3 = 'No entanto, a aplicação é um exemplo, sem qualquer persistência de dados, e usada para fins de ensino.'
-        
+        const text1 = 'Não salvamos dados submetidos no formulário da aplicação CAC TAT.'
+        const text2 = 'Utilzamos as tecnologias HTML, CSS e JavaScript, para simular uma aplicação real.'
+        const text3 = 'No entanto, a aplicação é um exemplo, sem qualquer persistência de dados, e usada para fins de ensino.'
+
         cy.visit('./src/privacy.html')
         cy.contains(text1)
         cy.contains(text2)
         cy.contains(text3)
         cy.contains('Talking About Testing').should('be.visible')
     });
-})
+    it('exibe mensagem por 3 segundos travar o relogio do navegador', function () {
+        cy.clock()
+        cy.sucesso()
+
+    });
+    it('exibe mensagem de sucesso por 3 segundos travar o relogio do navegador', function () {
+        cy.clock()
+        cy.sucesso()
+        cy.tick(three)
+        cy.get('.success').should('not.be.visible')
+    });
+    it('exibe mensagem de erro por 3 segundos travar o relogio do navegador', () => {
+        cy.clock()
+        cy.erro()
+        cy.tick(three)
+        cy.get('.error').should('not.be.visible')
+    });
+    Cypress._.times(3, function () {
+        it('Testando com o "lodash"', function () {
+            cy.sucesso()
+        });
+    })
+    it('Invoque atributos e métodos de elementos com o comando .invoke("show")', () => {
+        cy.get('#cat')
+            .invoke('show')
+            .should('be.visible')
+        cy.get('#title')
+            .invoke('text', 'CAT TAT')
+        cy.get('#subtitle')
+            .invoke('text', 'Eu achei o gatinho!!!')
+    });
+    it('Esconda atributos e métodos de elementos com o comando .invoke("hide")', () => {
+        cy.get('#cat').invoke('show')
+        cy.get('#cat').invoke('hide')
+    });
+    it('exibe e esconde as mensagens de sucesso e erro usando o .invoke()', () => {
+        cy.get('.success')
+            .should('not.be.visible')
+            .invoke('show')
+            .should('be.visible')
+            .and('contain', 'Mensagem enviada com sucesso.')
+            .invoke('hide')
+            .should('not.be.visible')
+        cy.get('.error')
+            .should('not.be.visible')
+            .invoke('show')
+            .should('be.visible')
+            .and('contain', 'Valide os campos obrigatórios!')
+            .invoke('hide')
+            .should('not.be.visible')
+    })
+    it('preenche a area de texto usando o comando invoke', () => {
+        const longText = Cypress._.repeat('No objeto de `options`', 100)
+        cy.get('#open-text-area')
+            .invoke('val', longText)
+            .should('have.value', longText)
+            .clear()
+            .should('have.value', '')
+    });
+    it.only('faz uma requisição HTTP', () => {
+        cy.request('https://cac-tat.s3.eu-central-1.amazonaws.com/index.html')
+            .should(function ($response) {
+                console.log($response);
+                const {status, statusText, body} = $response
+                expect(status).to.equal(200)
+                expect(statusText).to.equal('OK')
+                expect(body).to.include('CAC TAT')
+            })
+    });
+});
