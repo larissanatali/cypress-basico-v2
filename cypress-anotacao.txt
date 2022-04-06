@@ -1,0 +1,5 @@
+URL: https://cac-tat.s3.eu-central-1.amazonaws.com/index.html
+
+https://talkingabouttesting.com/2021/12/14/como-fazer-login-de-forma-programatica-com-cypress/
+https://talkingabouttesting.com/2021/02/07/como-verificar-a-estrutura-do-body-de-um-esquema-json-com-cypress/
+https://dev.to/walmyrlimaesilv/cy-request-vs-cy-intercept-cmi
